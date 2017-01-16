@@ -1,7 +1,7 @@
 #ifndef _ENTRY_H_
 #define _ENTRY_H_
 
-#include "types.h"
+#include "stdint.h"
 
 /* an entry can be a cache entry or a policy */
 struct entry {
@@ -15,6 +15,6 @@ struct entry {
 
     /* status information or acton */
     uint8_t desc;
-}
+};
 
 #endif /* _ENTRY_H_ */

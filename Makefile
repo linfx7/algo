@@ -1,15 +1,15 @@
-objs := tss.o main.o
+TARGET 		:= run
+CC 			:= g++
+OBJS 		:= main.o tss.o
+CXXFLAGS 	:= 
 
-default: $(objs)
+all: $(TARGET)
 
-tss.o:
-	gcc -c tss.c
-
-main.o:
-	gcc -c main.c
-
-default:
-	gcc $(objs) -o run
+rebuild: clean all
 
 clean:
-	rm tss.o main.o run
+	rm -fr *.o
+	rm -fr $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CXXFLAGS) -o $@ $(OBJS)
