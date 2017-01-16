@@ -27,7 +27,12 @@
 *.i*86
 *.x86_64
 *.hex
+run
 
 # Debug files
 *.dSYM/
 *.su
+
+# Ycm
+.ycm_extra_conf.py
+
