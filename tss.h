@@ -38,8 +38,6 @@ uint8_t get_entry(uint32_t, uint32_t);
 /* generate a key */
 uint64_t get_key(uint32_t, uint32_t);
 
-uint8_t match(struct entry *, uint32_t, uint32_t);
-
 extern uint32_t masks[33];
 
 #endif

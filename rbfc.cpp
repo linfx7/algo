@@ -3,6 +3,7 @@
 #include <iostream>
 #include <tr1/unordered_map>
 #include <map>
+#include <cmath>
 
 using std::make_pair;
 using std::tr1::unordered_map;
@@ -58,7 +59,20 @@ uint8_t get_rbcache(uint32_t from, uint32_t to)
 
 void update_rbcache(struct entry *e)
 {
-
+    uint32_t from_l = (e->from & masks[e->from_pre]),
+             from_u = from_l + pow(2, 32 - e->from_pre),
+             to_l = (e->to & masks[e->to_pre]),
+             to_u = to_l + pow(2, 32 - e->to_pre);
+    cmap::iterator it;
+    uint32_t from;
+    for (from = from_l; from < from_u; ++from)
+    {
+        it = rbfc.lower_bound(get_key(from, to_l));
+        for (; it != rbfc.end() && it->first <= get_key(from, to_u); it++)
+        {
+            it->second = e->desc;
+        }
+    }
 }
 
 void dump_rbfc()
