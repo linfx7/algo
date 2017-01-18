@@ -1,6 +1,6 @@
 TARGET 		:= run
 CC 			:= g++
-OBJS 		:= main.o tss.o fc.o
+OBJS 		:= main.o tss.o fc.o rbfc.o
 CXXFLAGS 	:= 
 
 all: $(TARGET)

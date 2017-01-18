@@ -1,8 +1,9 @@
 #include <iostream>
 #include <cstdio>
+#include <sys/time.h>
 #include "tss.h"
 #include "fc.h"
-#include <sys/time.h>
+#include "rbfc.h"
 
 #define NUM 64
 
@@ -62,6 +63,7 @@ int main()
 
     init_tss();
     init_cache();
+    init_rbcache();
     
     // insert into spd
     for (int i = 0; i < NUM * 1024; ++i)
@@ -73,10 +75,12 @@ int main()
     for (int i = 0; i < NUM * 1024; ++i)
     {
         add_cache(ips[i].from, ips[i].to, (uint8_t)1);
+        add_rbcache(ips[i].from, ips[i].to, (uint8_t)1);
     }
     
     dump_tss();
     dump_fc();
+    dump_rbfc();
 
     // load inputs
     struct entry inputs[1024 * 64];
@@ -103,10 +107,21 @@ int main()
     }
     gettimeofday(&end, 0);
     timersub(&end, &start, &diff);
-    cout << "Cache lookup takes: " << diff.tv_usec << "us." << endl;
+    cout << "Hashtable cache lookup takes: " << diff.tv_usec << "us." << endl;
+
+    gettimeofday(&start, 0);
+    // cache lookup
+    for (int i = 0; i < 65536; ++i)
+    {
+        get_rbcache(inputs[i].from, inputs[i].to);       
+    }
+    gettimeofday(&end, 0);
+    timersub(&end, &start, &diff);
+    cout << "Red-black tree cache lookup takes: " << diff.tv_usec << "us." << endl;
 
     free_tss();
     free_cache();
+    free_rbcache();
     return 0;
 }
 
