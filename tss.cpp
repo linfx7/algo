@@ -1,5 +1,5 @@
 #include "tss.h"
-#include <stddef.h>
+#include <cstddef>
 #include <list>
 #include <iostream>
 
@@ -45,7 +45,7 @@ void add_tuple(uint8_t from_pre, uint8_t to_pre)
     }
     tp.insert(it, n);
 
-    std::cout << "Add tuple: " << (uint32_t)from_pre << ", " << (uint32_t)to_pre << std::endl;
+    //std::cout << "Add tuple: " << (uint32_t)from_pre << ", " << (uint32_t)to_pre << std::endl;
 }
 
 void del_tuple(uint8_t from_pre, uint8_t to_pre)
@@ -61,6 +61,8 @@ void del_tuple(uint8_t from_pre, uint8_t to_pre)
         tp.erase(it);
     }
 }
+
+int tmpc = 0;
 
 void add_entry(struct entry *e)
 {
@@ -81,10 +83,13 @@ void add_entry(struct entry *e)
     }
     else
     {
+        if (it->ht.find(get_key(e->from & masks[e->from_pre],e->to & masks[e->to_pre])) != it->ht.end())
+            tmpc++;
         // add to the found tuple
         it->ht[get_key(e->from & masks[e->from_pre],
                        e->to & masks[e->to_pre])] = e->desc;
 
+#ifdef DEBUG
         std::cout << "Entry: " 
             << ((e->from >> 24) & 0x000000ff) << "." 
             << ((e->from >> 16) & 0x000000ff) << "." 
@@ -96,6 +101,7 @@ void add_entry(struct entry *e)
             << ( e->to        & 0x000000ff) << " ==> "
             << "Tuple: " << (uint32_t)e->from_pre << ", " << (uint32_t)e->to_pre
             << std::endl;
+#endif
     }
 }
 
@@ -130,9 +136,13 @@ uint8_t get_entry(uint32_t from, uint32_t to)
     {
         itm = it->ht.find(get_key(from & masks[it->from_pre], to & masks[it->to_pre]));
         if (itm != it->ht.end())
+        {
             result = itm->second;
+            //break;
+        }
     }
 
+#ifdef DEBUG
     std::cout << "Packet: " 
             << ((from >> 24) & 0x000000ff) << "." 
             << ((from >> 16) & 0x000000ff) << "." 
@@ -144,6 +154,7 @@ uint8_t get_entry(uint32_t from, uint32_t to)
             << ( to        & 0x000000ff) << " ==> "
             << "Action: " << (uint32_t)result
             << std::endl;
+#endif
 
     return result;
 }
@@ -154,14 +165,17 @@ uint64_t get_key(uint32_t from, uint32_t to)
         | (0x00000000ffffffff & (uint64_t)to);
 }
 
-void dump()
+void dump_tss()
 {
+    uint32_t total = 0;
     list<struct tuple>::iterator it = tp.begin();
     for (; it != tp.end(); it++)
     {
+        total += it->ht.size();
         unordered_map<uint64_t, uint8_t>::iterator itm;
         for (itm = it->ht.begin(); itm != it->ht.end(); itm++)
         {
+#ifdef DEBUG
             std::cout << "Entry: " 
                     << ((itm->first >> 56) & 0x000000ff) << "." 
                     << ((itm->first >> 48) & 0x000000ff) << "." 
@@ -175,7 +189,9 @@ void dump()
                     << (uint32_t)it->to_pre << "  "
                     << (uint32_t)itm->second
                     << std::endl;
+#endif
         }
     }
-    
+    std::cout << "Total SPs: " << total << "+" << tmpc << std::endl;
 }
+

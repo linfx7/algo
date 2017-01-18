@@ -2,7 +2,7 @@
 #define _TSS_H
 
 #include "entry.h"
-#include <stdint.h>
+#include <tr1/cstdint>
 #include <tr1/unordered_map>
 
 /* default size of hashtables */
@@ -16,7 +16,7 @@ struct tuple
     uint32_t ht_size;
 };
 
-void dump();
+void dump_tss();
 
 /* init tss before use */
 void init_tss();
@@ -39,5 +39,7 @@ uint8_t get_entry(uint32_t, uint32_t);
 uint64_t get_key(uint32_t, uint32_t);
 
 uint8_t match(struct entry *, uint32_t, uint32_t);
+
+extern uint32_t masks[33];
 
 #endif
