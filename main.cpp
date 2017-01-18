@@ -10,17 +10,6 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-struct ip
-{
-    uint32_t from, to;
-};
-
-struct net
-{
-    uint32_t from, to;
-    uint8_t from_pre, to_pre;
-};
-
 uint32_t address(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
 {
     return ((uint32_t)a << 24)
@@ -29,7 +18,7 @@ uint32_t address(uint8_t a, uint8_t b, uint8_t c, uint8_t d)
         + ((uint32_t)d);
 }
 
-void get_ips(struct ip *ips)
+void get_ips(struct entry *ips)
 {
     FILE *f = fopen("flows.csv", "r");
     for (int i = 0; i < 1024 * NUM; ++i)
@@ -39,7 +28,7 @@ void get_ips(struct ip *ips)
     fclose(f);
 }
 
-void get_inputs(struct ip *ips)
+void get_inputs(struct entry *ips)
 {
     FILE *f = fopen("inputs.csv", "r");
     for (int i = 0; i < 65536; ++i)
@@ -49,7 +38,7 @@ void get_inputs(struct ip *ips)
     fclose(f);
 }
 
-void get_nets(struct net *nets)
+void get_nets(struct entry *nets)
 {
     uint32_t fp, tp;
     FILE *f = fopen("rules.csv", "r");
@@ -58,6 +47,7 @@ void get_nets(struct net *nets)
         fscanf(f, "%d %d %d %d", &nets[i].from, &fp, &nets[i].to, &tp);
         nets[i].from_pre = (uint8_t)fp;
         nets[i].to_pre = (uint8_t)tp;
+        nets[i].desc = 1;
     }
     fclose(f);
 }
@@ -65,8 +55,8 @@ void get_nets(struct net *nets)
 int main()
 {
     // load test data
-    struct ip ips[1024 * NUM];
-    struct net nets[1024 * NUM];
+    struct entry ips[1024 * NUM];
+    struct entry nets[1024 * NUM];
     get_ips(ips);
     get_nets(nets);
 
@@ -76,13 +66,7 @@ int main()
     // insert into spd
     for (int i = 0; i < NUM * 1024; ++i)
     {
-        struct entry e;
-        e.from = nets[i].from;
-        e.from_pre = nets[i].from_pre;
-        e.to = nets[i].to;
-        e.to_pre = nets[i].to_pre;
-        e.desc = 1;
-        add_entry(&e);
+        add_entry(&nets[i]);
     }
 
     // insert into cache
@@ -95,7 +79,7 @@ int main()
     dump_fc();
 
     // load inputs
-    struct ip inputs[1024 * 64];
+    struct entry inputs[1024 * 64];
     get_inputs(inputs);
 
     //time
