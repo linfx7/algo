@@ -22,7 +22,7 @@ list<struct tuple> tp;
 
 void init_tss()
 {
-    free_tss();
+    tp.clear();
 }
 
 void free_tss()

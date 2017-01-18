@@ -5,7 +5,7 @@
 #include "fc.h"
 #include "rbfc.h"
 
-#define NUM 64
+#define NUM 1
 
 using std::cin;
 using std::cout;
@@ -89,6 +89,8 @@ int main()
     //time
     struct timeval start, end, diff;
 
+    for (int c = 0; c < 3; ++c)
+    {
     gettimeofday(&start, 0);
     // spd lookup
     for (int i = 0; i < 65536; ++i)
@@ -97,7 +99,7 @@ int main()
     }
     gettimeofday(&end, 0);
     timersub(&end, &start, &diff);
-    cout << "SPD lookup takes: " << diff.tv_usec << "us." << endl;
+    cout << "SPD lookup takes: \033[31m" << diff.tv_usec << "\033[0mus." << endl;
 
     gettimeofday(&start, 0);
     // cache lookup
@@ -107,7 +109,7 @@ int main()
     }
     gettimeofday(&end, 0);
     timersub(&end, &start, &diff);
-    cout << "Hashtable cache lookup takes: " << diff.tv_usec << "us." << endl;
+    cout << "Hashtable cache lookup takes: \033[31m" << diff.tv_usec << "\033[0mus." << endl;
 
     gettimeofday(&start, 0);
     // cache lookup
@@ -117,7 +119,8 @@ int main()
     }
     gettimeofday(&end, 0);
     timersub(&end, &start, &diff);
-    cout << "Red-black tree cache lookup takes: " << diff.tv_usec << "us." << endl;
+    cout << "Red-black tree cache lookup takes: \033[31m" << diff.tv_usec << "\033[0mus." << endl;
+    }//end for
 
     free_tss();
     free_cache();

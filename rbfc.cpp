@@ -15,7 +15,7 @@ cmap rbfc;
 
 void init_rbcache()
 {
-    free_tss();
+    rbfc.clear();
 }
 
 void free_rbcache()
@@ -28,7 +28,7 @@ void add_rbcache(uint32_t from, uint32_t to, uint8_t status)
     rbfc[get_key(from, to)] = status;
 
 #ifdef DEBUG
-    std::cout << "Cache: " 
+    std::cout << "Red-black tree cache: " 
         << ((from >> 24) & 0x000000ff) << "." 
         << ((from >> 16) & 0x000000ff) << "." 
         << ((from >>  8) & 0x000000ff) << "." 
@@ -67,7 +67,7 @@ void dump_rbfc()
     for (;it != rbfc.end(); it++)
     {
 #ifdef DEBUG
-        std::cout << "Cache: " 
+        std::cout << "Red-black tree cache: " 
                 << ((it->first >> 56) & 0x000000ff) << "." 
                 << ((it->first >> 48) & 0x000000ff) << "." 
                 << ((it->first >> 40) & 0x000000ff) << "." 
@@ -80,6 +80,6 @@ void dump_rbfc()
                 << std::endl;
 #endif
     }
-    std::cout << "Total cache: " << rbfc.size() << std::endl;
+    std::cout << "Total red-black tree cache: " << rbfc.size() << std::endl;
 }
 

@@ -12,10 +12,11 @@ typedef unordered_map<uint64_t, uint8_t> cmap;
 //typedef map<uint64_t, uint8_t> cmap;
 
 cmap fc;
+int eq = 0;
 
 void init_cache()
 {
-    free_tss();
+    fc.clear();
 }
 
 void free_cache()
