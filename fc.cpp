@@ -57,18 +57,20 @@ uint8_t get_cache(uint32_t from, uint32_t to)
     return result;
 }
 
-void update_cache(struct entry *e)
+uint32_t update_cache(struct entry *e)
 {
+    uint32_t result = 0;
     cmap::iterator it = fc.begin();
     for (;it != fc.end(); it++)
     {
         if ((((uint32_t)(it->first >> 32) & masks[e->from_pre]) == (e->from & masks[e->from_pre]))
-                && (((uint32_t)(it->first) & masks[e->from_pre]) == (e->from & masks[e->from_pre])))
+                && (((uint32_t)(it->first) & masks[e->to_pre]) == (e->to & masks[e->to_pre])))
         {
-            std::cout << "here" << std::endl;
             it->second = e->desc;
+            result++;
         }
     }
+    return result;
 }
 
 void dump_fc()

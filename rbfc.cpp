@@ -57,13 +57,36 @@ uint8_t get_rbcache(uint32_t from, uint32_t to)
     return result;
 }
 
-void update_rbcache(struct entry *e)
+uint32_t update_rbcache(struct entry *e)
 {
     uint32_t from_l = (e->from & masks[e->from_pre]),
              from_u = from_l + pow(2, 32 - e->from_pre),
              to_l = (e->to & masks[e->to_pre]),
-             to_u = to_l + pow(2, 32 - e->to_pre);
+             to_u = to_l + pow(2, 32 - e->to_pre),
+             result = 0;
     cmap::iterator it;
+
+    if (e->from_pre <= (uint8_t)24)
+    //if (1)
+    { //if
+    it = rbfc.lower_bound(get_key(from_l, to_l));
+    //it = rbfc.begin();
+    cmap::iterator end = rbfc.upper_bound(get_key(from_u, to_u));
+    //cmap::iterator end = rbfc.end();
+    int c = 0;
+    for (; it != end; it++)
+    {
+        c++;
+        if ((((uint32_t)(it->first >> 32) & masks[e->from_pre]) == (e->from & masks[e->from_pre]))
+                && (((uint32_t)(it->first) & masks[e->to_pre]) == (e->to & masks[e->to_pre])))
+        {
+            it->second = e->desc;
+            result++;
+        }
+    }
+    } //if
+    else
+    { //else
     uint32_t from;
     for (from = from_l; from < from_u; ++from)
     {
@@ -71,8 +94,11 @@ void update_rbcache(struct entry *e)
         for (; it != rbfc.end() && it->first <= get_key(from, to_u); it++)
         {
             it->second = e->desc;
+            result++;
         }
     }
+    } //else
+    return result;
 }
 
 void dump_rbfc()

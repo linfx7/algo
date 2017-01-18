@@ -18,6 +18,6 @@ void del_cache(uint32_t, uint32_t);
 /* get an entry using the given ip addresses */
 uint8_t get_cache(uint32_t, uint32_t);
 /* update the cache using the given entry */
-void update_cache(struct entry *);
+uint32_t update_cache(struct entry *);
 
 #endif

@@ -6,6 +6,7 @@
 #include "rbfc.h"
 
 #define NUM 64
+#define TEST 64
 
 using std::cin;
 using std::cout;
@@ -36,26 +37,26 @@ void get_inputs(struct entry *ips)
 {
     FILE *f = fopen("inputs.csv", "r");
 
-    /*
     // for lookup
-    for (int i = 0; i < 65536; ++i)
+    for (int i = 0; i < TEST * 1024; ++i)
     {
         fscanf(f, "%d %d", &ips[i].from, &ips[i].to);
         ips[i].from_pre = 0;
         ips[i].to_pre = 0;
         ips[i].desc = 1;
     }
-    */
 
+    /*
     // for update
     uint32_t fp, tp;
-    for (int i = 0; i < 65536; ++i)
+    for (int i = 0; i < TEST * 1024; ++i)
     {
         fscanf(f, "%d %d %d %d", &ips[i].from, &fp, &ips[i].to, &tp);
         ips[i].from_pre = (uint8_t)fp;
         ips[i].to_pre = (uint8_t)tp;
         ips[i].desc = 1;
     }
+    */
 
     fclose(f);
 }
@@ -75,7 +76,7 @@ void get_rules(struct entry *nets)
 }
 
 /* lookup test */
-void lookup_main()
+int main()
 {
     // load test data
     struct entry ips[1024 * NUM];
@@ -122,7 +123,7 @@ void lookup_main()
     }
     gettimeofday(&end, 0);
     timersub(&end, &start, &diff);
-    cout << "SPD lookup takes: \033[31m" << diff.tv_usec << "\033[0mus." << endl;
+    cout << "SPD lookup takes: \033[31m" << diff.tv_sec << "s " << diff.tv_usec << "\033[0mus." << endl;
 
     gettimeofday(&start, 0);
     // cache lookup
@@ -132,7 +133,7 @@ void lookup_main()
     }
     gettimeofday(&end, 0);
     timersub(&end, &start, &diff);
-    cout << "Hashtable cache lookup takes: \033[31m" << diff.tv_usec << "\033[0mus." << endl;
+    cout << "Hashtable cache lookup takes: \033[31m" << diff.tv_sec << "s " << diff.tv_usec << "\033[0mus." << endl;
 
     gettimeofday(&start, 0);
     // cache lookup
@@ -142,16 +143,18 @@ void lookup_main()
     }
     gettimeofday(&end, 0);
     timersub(&end, &start, &diff);
-    cout << "Red-black tree cache lookup takes: \033[31m" << diff.tv_usec << "\033[0mus." << endl;
+    cout << "Red-black tree cache lookup takes: \033[31m" << diff.tv_sec << "s " << diff.tv_usec << "\033[0mus." << endl;
     //-----------------
     }//end for
 
     free_tss();
     free_cache();
     free_rbcache();
+
+    return 0;
 }
 
-int main()
+int update_main()
 {
     init_cache();
     init_rbcache();
@@ -172,27 +175,28 @@ int main()
 
     //time
     struct timeval start, end, diff;
+    uint32_t tmp;
 
     for (int c = 0; c < 3; ++c)
     {
     //-----------------
     gettimeofday(&start, 0);
-    for (int i = 0; i < 1024; ++i)
+    for (int i = 0; i < 1024 * TEST; ++i)
     {
-        update_cache(&inputs[i]);
+        tmp = update_cache(&inputs[i]);
     }
     gettimeofday(&end, 0);
     timersub(&end, &start, &diff);
-    cout << "Hashtable cache update takes: \033[31m" << diff.tv_usec << "\033[0mus." << endl;
+    cout << "Hashtable cache update " << tmp << " takes: \033[31m" << diff.tv_sec << "s " << diff.tv_usec << "us\033[0m." << endl;
 
     gettimeofday(&start, 0);
-    for (int i = 0; i < 1024; ++i)
+    for (int i = 0; i < 1024 * TEST; ++i)
     {
-        update_rbcache(&inputs[i]);
+        tmp = update_rbcache(&inputs[i]);
     }
     gettimeofday(&end, 0);
     timersub(&end, &start, &diff);
-    cout << "Red-black tree cache update takes: \033[31m" << diff.tv_usec << "\033[0mus." << endl;
+    cout << "Red-black tree cache update " << tmp << " takes: \033[31m" << diff.tv_sec << "s " << diff.tv_usec << "us\033[0m." << endl;
     //-----------------
     } //for
 

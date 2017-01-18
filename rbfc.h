@@ -18,6 +18,6 @@ void del_rbcache(uint32_t, uint32_t);
 /* get an entry using the given ip addresses */
 uint8_t get_rbcache(uint32_t, uint32_t);
 /* update the cache using the given entry */
-void update_rbcache(struct entry *);
+uint32_t update_rbcache(struct entry *);
 
 #endif
